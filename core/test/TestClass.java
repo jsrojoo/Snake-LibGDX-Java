@@ -6,7 +6,13 @@ import org.junit.Test;
 public class TestClass {
 
     @Test
-    public void test(){
+    public void test() {
         System.out.println("Test");
     }
+
+    @Test
+    public void test1(){
+
+    }
+
 }
