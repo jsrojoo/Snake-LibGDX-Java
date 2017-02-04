@@ -1,4 +1,4 @@
-package Model.SnakeEntityV2;
+package Model.Entities.Base;
 
 /**
  * Created by rojo on 2/1/17.

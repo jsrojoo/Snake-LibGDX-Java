@@ -1,12 +1,14 @@
 package rojo.snake;
 
-import Model.SnakeEntityV2.Point;
+import Model.Entities.Base.Point;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ public class SnakeGame extends ApplicationAdapter {
 
     private OrthographicCamera orthographicCamera;
     private ShapeRenderer shapeRenderer;
+    private SpriteBatch batch;
+    private BitmapFont font;
 
     private final float DEFAULT_SIZE = 20;
     private float size = DEFAULT_SIZE;
@@ -33,6 +37,8 @@ public class SnakeGame extends ApplicationAdapter {
     private float windowWidth;
     private float windowHeight;
 
+    private int score;
+
 
     @Override
     public void create() {
@@ -40,6 +46,8 @@ public class SnakeGame extends ApplicationAdapter {
         Gdx.graphics.setTitle("Bitin");
         orthographicCamera = new OrthographicCamera();
         shapeRenderer = new ShapeRenderer();
+        batch = new SpriteBatch();
+        font = new BitmapFont();
 
         windowWidth = Gdx.graphics.getWidth();
         windowHeight = Gdx.graphics.getHeight();
@@ -64,8 +72,12 @@ public class SnakeGame extends ApplicationAdapter {
     @Override
     public void render() {
         float dt = Math.min(Gdx.graphics.getDeltaTime(), 1 / frames);
-
         clearScreen();
+
+        batch.begin();
+        font.draw(batch, "Score : " + score, 0, 12);
+        batch.end();
+
         speedSetter();
         fpsSetter(dt);
 
@@ -75,6 +87,8 @@ public class SnakeGame extends ApplicationAdapter {
         moveSnake(head, newPos);
 
         renderGameObjects(head);
+
+
         orthographicCamera.update();
 
     }
@@ -88,10 +102,10 @@ public class SnakeGame extends ApplicationAdapter {
 
     private void clearScreen() {
 
-        if (r < 0.5) {
-//            r += 0.001;
+        if (r < .6 && g < 0.63 && b < 0.65) {
+            r += 0.001;
             g += 0.001;
-//            b += 0.001;
+            b += 0.001;
         }
 
         Gdx.gl.glClearColor(r, g, b, 0);
@@ -128,15 +142,18 @@ public class SnakeGame extends ApplicationAdapter {
 
     private void checkKeyPressThenMove(Point head, float newPos) {
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            head.setX(head.getX() + newPos);
+            if (head.getX() < windowWidth - size) head.setX(head.getX() + newPos);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            head.setX(head.getX() - newPos);
+            if (head.getX() > 0) head.setX(head.getX() - newPos);
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) head.setY(head.getY() - newPos);
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            if (head.getY() > 0) head.setY(head.getY() - newPos);
+        }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) head.setY(head.getY() + newPos);
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
+            if (head.getY() < windowHeight - size) head.setY(head.getY() + newPos);
     }
 
     private void renderGameObjects(Point head) {
@@ -172,7 +189,9 @@ public class SnakeGame extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-
+        batch.dispose();
+        font.dispose();
+        shapeRenderer.dispose();
     }
 
     private class Apple {
@@ -181,7 +200,7 @@ public class SnakeGame extends ApplicationAdapter {
         private float randomFloatY = getRandomFloat();
 
         private float getRandomFloat() {
-            return rand.nextFloat() * (rand.nextInt((int) windowHeight) - (int) windowHeight) + windowHeight;
+            return rand.nextFloat() * (rand.nextInt((int) windowHeight) - (int) windowHeight) + windowHeight - size;
         }
 
         private void draw() {
@@ -204,6 +223,7 @@ public class SnakeGame extends ApplicationAdapter {
                     appleY < headY + size && appleY + size > headY) {
                 randomFloatX = getRandomFloat();
                 randomFloatY = getRandomFloat();
+                score = score + 1;
             }
         }
 
