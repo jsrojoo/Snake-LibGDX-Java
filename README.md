@@ -1,4 +1,11 @@
-# java
-Snake
+# Snake Game in libGDX
 
-Simple snake game implemented in Libgdx
+Roadmap : 
+
+-*Home screen*
+
+-*Scoring*
+
+-*power ups*
+
+-*etc*
