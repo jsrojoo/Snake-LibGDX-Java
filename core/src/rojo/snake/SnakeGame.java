@@ -1,6 +1,7 @@
 package rojo.snake;
 
-import Model.Entities.Base.Point;
+import Entities.Base.Position;
+import Entities.World.World;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -16,7 +17,7 @@ import java.util.Random;
 
 public class SnakeGame extends ApplicationAdapter {
 
-    private OrthographicCamera orthographicCamera;
+    private World world;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
     private BitmapFont font;
@@ -25,7 +26,7 @@ public class SnakeGame extends ApplicationAdapter {
     private float size = DEFAULT_SIZE;
 
     private float speed = 100f;
-    private ArrayList<Point> points;
+    private ArrayList<Position> positions;
 
     private float frames = 20f;
 
@@ -44,7 +45,6 @@ public class SnakeGame extends ApplicationAdapter {
     public void create() {
 
         Gdx.graphics.setTitle("Bitin");
-        orthographicCamera = new OrthographicCamera();
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -52,16 +52,16 @@ public class SnakeGame extends ApplicationAdapter {
         windowWidth = Gdx.graphics.getWidth();
         windowHeight = Gdx.graphics.getHeight();
 
-        orthographicCamera.setToOrtho(true, windowWidth, windowHeight);
+        world = new World(windowWidth, windowHeight);
 
         float windowCenterX = windowWidth / 2;
         float windowCenterY = windowHeight / 2;
 
-        points = new ArrayList<Point>();
+        positions = new ArrayList<Position>();
 
         int length = 50;
         for (int i = 0; i < length; i++) {
-            points.add(new Point(windowCenterX, (windowCenterY) + i * size));
+            positions.add(new Position(windowCenterX, (windowCenterY) + i * size));
         }
 
         apple = new Apple();
@@ -81,7 +81,7 @@ public class SnakeGame extends ApplicationAdapter {
         speedSetter();
         fpsSetter(dt);
 
-        Point head = points.get(0);
+        Position head = positions.get(0);
         float newPos = speed * dt;
 
         moveSnake(head, newPos);
@@ -89,15 +89,15 @@ public class SnakeGame extends ApplicationAdapter {
         renderGameObjects(head);
 
 
-        orthographicCamera.update();
+        world.update();
 
     }
 
     private void moveBody(float oldX, float oldY) {
-        Point tail = points.remove(points.size() - 1);
+        Position tail = positions.remove(positions.size() - 1);
         tail.setX(oldX);
         tail.setY(oldY);
-        points.add(1, tail);
+        positions.add(1, tail);
     }
 
     private void clearScreen() {
@@ -132,7 +132,7 @@ public class SnakeGame extends ApplicationAdapter {
         }
     }
 
-    private void moveSnake(Point head, float newPos) {
+    private void moveSnake(Position head, float newPos) {
         float oldX = head.getX();
         float oldY = head.getY();
 
@@ -140,7 +140,7 @@ public class SnakeGame extends ApplicationAdapter {
         moveBody(oldX, oldY);
     }
 
-    private void checkKeyPressThenMove(Point head, float newPos) {
+    private void checkKeyPressThenMove(Position head, float newPos) {
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             if (head.getX() < windowWidth - size) head.setX(head.getX() + newPos);
         }
@@ -156,8 +156,8 @@ public class SnakeGame extends ApplicationAdapter {
             if (head.getY() < windowHeight - size) head.setY(head.getY() + newPos);
     }
 
-    private void renderGameObjects(Point head) {
-        shapeRenderer.setProjectionMatrix(orthographicCamera.combined);
+    private void renderGameObjects(Position head) {
+        shapeRenderer.setProjectionMatrix(world.getMatrix());
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         drawSnake();
@@ -166,7 +166,7 @@ public class SnakeGame extends ApplicationAdapter {
         shapeRenderer.end();
     }
 
-    private void drawApple(Point head) {
+    private void drawApple(Position head) {
         if (apple != null) {
             apple.draw();
             apple.checkCollision(head);
@@ -174,15 +174,15 @@ public class SnakeGame extends ApplicationAdapter {
     }
 
     private void drawSnake() {
-        for (Point point : points) {
+        for (Position position : positions) {
 
-            int index = points.indexOf(point);
+            int index = positions.indexOf(position);
 
             if (index == 0) shapeRenderer.setColor(Color.OLIVE);
             else if (index % 2 == 0) shapeRenderer.setColor(Color.BROWN);
             else shapeRenderer.setColor(Color.GRAY);
 
-            shapeRenderer.rect(point.getX(), point.getY(), size, size);
+            shapeRenderer.rect(position.getX(), position.getY(), size, size);
 
         }
     }
@@ -212,7 +212,7 @@ public class SnakeGame extends ApplicationAdapter {
                     randomFloatY, size, size);
         }
 
-        public void checkCollision(Point head) {
+        public void checkCollision(Position head) {
             int headX = (int) Math.abs(head.getX());
             int appleX = (int) Math.abs(randomFloatX);
             int headY = (int) Math.abs(head.getY());

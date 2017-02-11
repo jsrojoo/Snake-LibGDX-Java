@@ -1,4 +1,4 @@
-package Model.Entities.Base;
+package Entities.Base;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
@@ -6,24 +6,24 @@ import com.badlogic.gdx.math.Rectangle;
 /**
  * Created by rojo on 2/4/17.
  */
-public class Part {
+public class BodyPart {
 
-    private Point point;
+    private Position position;
     private float size;
     private Color color;
 
-    public Part(Point point, float size) {
-        this.point = point;
+    public BodyPart(float size) {
         this.size = size;
         this.color = Color.DARK_GRAY;
     }
 
-    public Point getPoint() {
-        return point;
+    public Position getPosition() {
+        if (position == null) position = new Position(0, 0);
+        return position;
     }
 
-    public void setPoint(Point point) {
-        this.point = point;
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     public float getSize() {
@@ -43,7 +43,7 @@ public class Part {
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(point.getX(), point.getY(), size, size);
+        return new Rectangle(position.getX(), position.getY(), size, size);
     }
 
 }

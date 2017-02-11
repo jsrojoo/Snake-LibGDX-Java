@@ -22,7 +22,7 @@ public class SnakeGame2 extends ApplicationAdapter {
         windowHeight = Gdx.graphics.getHeight();
 
         orthographicCamera = new OrthographicCamera();
-        orthographicCamera.setToOrtho(true, windowWidth, windowHeight);
+        orthographicCamera.setToOrtho(false, windowWidth, windowHeight);
 
     }
 

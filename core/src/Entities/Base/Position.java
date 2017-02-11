@@ -1,14 +1,14 @@
-package Model.Entities.Base;
+package Entities.Base;
 
 /**
  * Created by rojo on 2/1/17.
  */
-public class Point {
+public class Position {
 
     private float x;
     private float y;
 
-    public Point(float x, float y) {
+    public Position(float x, float y) {
         this.x = x;
         this.y = y;
     }
